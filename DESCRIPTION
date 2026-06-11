@@ -1,0 +1,27 @@
+Package: datomanager
+Title: Governance and Access Management for datom Data Repositories
+Version: 0.0.0.9000
+Authors@R: 
+    person("Afshin", "Mashadi-Hossein", , "amashadihossein@gmail.com", 
+           role = c("aut", "cre"))
+Description: Companion governance package for datom. Owns the governed
+    lifecycle of datom data repositories -- governance repo bootstrap,
+    project registration, dispatch routing, managed data migration, and
+    decommissioning -- plus reader-facing access enforcement (roles,
+    grants, and IAM-backed storage access points). datomanager depends on
+    datom and orchestrates datom's exported platform helpers; datom never
+    depends on datomanager and remains fully functional without it.
+License: MIT + file LICENSE
+URL: https://github.com/amashadihossein/datomanager
+BugReports: https://github.com/amashadihossein/datomanager/issues
+Imports:
+    datom,
+    rlang
+Suggests: 
+    testthat (>= 3.0.0),
+    withr,
+    mockery
+Config/testthat/edition: 3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
