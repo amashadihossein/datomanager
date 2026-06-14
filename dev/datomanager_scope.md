@@ -279,18 +279,27 @@ six storage/repo extension functions (`datom_storage_copy`, `datom_storage_verif
 `datom_storage_list`, `datom_storage_delete_prefix`, `datom_repo_set_data_store`,
 `datom_repo_delete`) with stable signatures. See `dev/draft_managed_migration.md` Part A.
 
-**Activation ordering**:
-1. Ship datom Phase 22 (export `datom_storage_*` + `datom_repo_set_data_store()` +
-   `datom_repo_delete()`).
-2. Create datomanager package scaffold (DESCRIPTION, NAMESPACE, skeleton R files).
-3. Lift the 9 GOV_SEAM write helpers from datom to datomanager (mechanical move).
-4. Lift + rename the 5 exported gov functions to `gov_*` (extract `datom_repo_delete()`
-   from `datom_decommission()`'s data-side steps; that helper stays in datom).
-5. Decouple `datom_init_repo()` from `.datom_gov_register_project()`.
-6. Implement `gov_migrate_data()` in datomanager (Phase 19 chunks), calling datom's
-   Phase 22 API.
+**Activation ordering** — the authoritative cross-repo sequence now lives in the spec at
+`.kiro/specs/gov-seam-liftout/contract.md` → "Execution sequence" (mirrored in the datom
+spec). This is a summary:
 
-Steps 2-5 are a 1-2 day mechanical effort. Step 6 is Phase 19's full scope.
+1. ~~Ship datom Phase 22~~ — complete 2026-06-10.
+2. ~~Create datomanager package scaffold~~ — complete (Phase 0).
+3. **datom side (lands first):** add `conn$gov_backend`; decouple `datom_init_repo()` from
+   gov registration; remove the 5 exported gov functions and the 9 internal gov-write
+   helpers; `R CMD check` clean; version bump.
+4. **datomanager side (lands second):** **reimplement** the 9 gov-write behaviors natively
+   — git2r for gov-repo git, own storage IO for the gov-storage mirror — and export
+   `gov_init` / `gov_attach` / `gov_decommission` / `gov_sync_dispatch` / `gov_pull`.
+5. Cross-repo validation + docs/sync.
+6. Phase 19 `gov_migrate_data()` — a separate, later milestone.
+
+> **Supersedes the earlier "lift / mechanical move" framing.** Under the **pure separation**
+> decision (gov-seam-liftout contract, D2/C7/C8), datomanager **reimplements** the gov-write
+> helpers using its own git2r + storage IO; it does not copy datom's git-calling bodies, and
+> datom exports no git or gov-storage primitives. Treat any remaining "moved from datom"
+> wording in this doc as "reimplemented natively in datomanager." The contract is the
+> authoritative source for ordering and rationale.
 
 ---
 

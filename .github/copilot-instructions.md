@@ -58,24 +58,35 @@ two-repos invariant: gov code commits only to the gov clone.
 - **Flat over nested**: early returns, guard clauses. No nested if-else chains.
 - **Functional**: `purrr::` over for-loops.
 - **Small, composable functions**; single responsibility.
-- **Naming**: `gov_verb` for exports, `.gov_verb` (or `.datom_gov_*` for lifted
-  helpers) for internals. `cli::` for messages, `glue::glue()` for strings,
+- **Naming**: `gov_verb` for exports, `.gov_verb` (or `.datom_gov_*` for the reimplemented
+  gov-write helpers) for internals. `cli::` for messages, `glue::glue()` for strings,
   `fs::` for filesystem, `yaml::`/`jsonlite::` for config.
 - **ASCII only** in `R/*.R` (R CMD check warns on non-ASCII, even in comments):
   `--` not em-dash, straight quotes, `...` not ellipsis char.
-- **GOV_SEAM marker**: gov-write helpers lifted from datom keep their
-  `# GOV_SEAM:` tags. New gov-write code is added next to them.
+- **Gov-write helpers are reimplemented, not lifted**: under pure separation datomanager
+  implements the gov-write behaviors natively — gov-repo git via its own `git2r`, the
+  gov-storage mirror via its own IO conforming to the contract's storage layout (C8). It does
+  **not** copy datom's git-calling bodies and uses no `datom:::`. Keep them internal in
+  `R/utils-gov.R`; the `# GOV_SEAM:` tag marks provenance.
 
 ## Interface Contract with datom
 
 datomanager operates on `datom_conn` objects produced by `datom_get_conn()`. It
 relies on these conn fields (do not expect datom to rename without a coordinated
-bump): `gov_local_path`, `gov_root`, `gov_client`, `project_name`, `backend`,
-`root`, `prefix`, `region`.
+bump): `gov_local_path`, `gov_root`, `gov_prefix`, `gov_region`, `gov_backend`,
+`gov_client`, `github_pat`, `project_name`, `backend`, `root`, `prefix`, `region`.
+Select the gov storage backend from `conn$gov_backend` — never infer it. datomanager
+owns gov-repo git (its own `git2r`) and the gov-storage mirror (its own IO); it reaches
+into datom only for these conn fields and the data-side platform surface below.
 
 The stable platform surface datomanager orchestrates (datom Phase 22):
 `datom_storage_list`, `datom_storage_copy`, `datom_storage_verify`,
 `datom_storage_delete_prefix`, `datom_repo_set_data_store`, `datom_repo_delete`.
+
+**Authoritative source**: the `gov-seam-liftout` spec contract
+(`.kiro/specs/gov-seam-liftout/contract.md`, mirrored in `../datom`) is the source of truth
+for the conn interface (C6), gov-repo git ownership (C7), gov storage layout (C8), and the
+cross-repo execution sequence.
 
 ## Commit Message Convention (gov repo audit contract -- preserve exactly)
 
