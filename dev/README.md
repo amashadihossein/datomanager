@@ -1,5 +1,15 @@
 # datomanager Development Hub
 
+## Workflow model (read first): spec = phase
+
+A unit of multi-step work is a **Kiro spec** under `.kiro/specs/{feature}/`
+(`requirements.md` + `design.md` + `tasks.md`). **The spec replaces the legacy
+`dev/phase_{n}_{name}.md` phase doc.** Specs persist as durable documentation — they are not
+deleted on completion. datomanager inherits datom's chunk/branch/checkpoint discipline
+(`../datom/dev/README.md`); translate legacy terms as you read: phase doc → the spec; Chunks
+table / Progress Log → `tasks.md`; Active Phases → Active Specs. Works the same in Kiro and
+Copilot.
+
 ## Documentation Hierarchy
 
 datomanager follows the same documentation discipline as datom.
@@ -7,13 +17,13 @@ datomanager follows the same documentation discipline as datom.
 ```
 .github/copilot-instructions.md     <- Entry point for AI/developers (conventions, quick start)
          |
-dev/README.md                       <- This file: navigation hub, phase status
+dev/README.md                       <- This file: navigation hub, spec status
          |
 dev/datomanager_scope.md            <- Companion package scope (gov lifecycle + migration)
 dev/datomanager_overview.md         <- Access enforcement design (roles, grants, IAM; forward-looking)
 dev/draft_managed_migration.md      <- gov_migrate_data() spec (first concrete deliverable)
          |
-dev/phase_{n}_{name}.md             <- Active development plans (temporary)
+.kiro/specs/{feature}/              <- Active work: requirements.md, design.md, tasks.md
 ```
 
 The authoritative datom design docs live in the sibling repo: `../datom/dev/`
@@ -38,8 +48,8 @@ change window is open. See the roadmap below.
   `datom::datom_*()` symbol -- no `:::`.
 - **Prefix = package**: `gov_*` and `access_*` symbols are owned by datomanager;
   `datom_*` by datom. No symbol is exported by both packages.
-- **datom is not modified by datomanager work** unless a phase explicitly calls
-  for it (the GOV_SEAM lift-out is the first such phase).
+- **datom is not modified by datomanager work** unless a spec explicitly calls
+  for it (the GOV_SEAM lift-out is the first such spec).
 
 > **Doc provenance note**: `datomanager_scope.md`, `datomanager_overview.md`, and
 > `draft_managed_migration.md` were authored inside `datom/dev/` and copied here
@@ -51,11 +61,11 @@ change window is open. See the roadmap below.
 
 ## Current Development State
 
-### Active Phases
+### Active Specs
 
-| Phase | Started | Status | Doc |
-|-------|---------|--------|-----|
-| -- | -- | No active phases | -- |
+| Spec | Started | Status | Location |
+|------|---------|--------|----------|
+| gov-seam-liftout (datomanager side) | 2026-06-13 | requirements + design done; tasks pending | `.kiro/specs/gov-seam-liftout/` |
 
 ### Completed Phases
 
@@ -67,7 +77,7 @@ change window is open. See the roadmap below.
 
 | Step | Summary | Prereq |
 |------|---------|--------|
-| GOV_SEAM lift-out | Move 9 `.datom_gov_*` write helpers from datom into datomanager; lift + rename the 5 exported gov functions to `gov_*` (`datom_init_gov`->`gov_init`, `datom_attach_gov`->`gov_attach`, `datom_decommission`->`gov_decommission`, `datom_sync_dispatch`->`gov_sync_dispatch`, `datom_pull_gov`->`gov_pull`); decouple `datom_init_repo()` from `.datom_gov_register_project()`. Extract `datom_repo_delete()` to stay in datom. **Requires changing datom (coordinated change window).** ~2 days. | datom change window |
+| GOV_SEAM lift-out | **Now specced** (`.kiro/specs/gov-seam-liftout/`). datom (lands first): add `conn$gov_backend`, decouple `datom_init_repo()` from gov registration, remove the 5 exported gov functions + 9 internal gov-write helpers. datomanager (second): **reimplement** the 9 gov-write helpers natively (pure separation -- git2r + own storage IO, not a code move) and export the 5 `gov_*` functions (`gov_init`/`gov_attach`/`gov_decommission`/`gov_sync_dispatch`/`gov_pull`). `datom_repo_delete()` stays in datom. See the spec contract for the cross-repo execution sequence. **Requires changing datom (coordinated change window).** | datom change window |
 | Phase 19: `gov_migrate_data()` | Governed migration verb: atomic copy + `ref.json` switch + migration-history record. Orchestrates datom's Phase 22 storage API; gov writes behind `# GOV_SEAM:`. Full spec in `draft_managed_migration.md`. 2-3 sessions. | Lift-out |
 | Access enforcement | Roles, grants, IAM-backed access points gating `datom_read()`. `access_*` surface. Design in `datomanager_overview.md`. | Phase 19 |
 
@@ -83,16 +93,15 @@ you are editing. Shell commands with `cwd` pinned to `..../dev` and relative
 
 ## Development Workflow
 
-datomanager inherits datom's chunk-based, phase-doc-driven workflow. See
+datomanager inherits datom's chunk-based, **spec-driven** workflow. See
 `.github/copilot-instructions.md` for conventions and `../datom/dev/README.md`
-for the full chunk lifecycle, delivery checklist, branch workflow, and phase
+for the full chunk lifecycle, delivery checklist, branch workflow, and spec
 completion procedure -- they apply here verbatim.
 
 Key reminders:
 
-1. Multi-step work gets a phase doc + feature branch before any code.
-2. Every chunk-completing commit updates the phase doc (Chunks table status,
-   Status header, Progress Log) in the same commit.
+1. Multi-step work gets a spec (`.kiro/specs/{feature}/`) + feature branch before any code.
+2. Every chunk-completing commit checks off the task in `tasks.md` in the same commit.
 3. Full test suite (`devtools::test()`) before every commit; report the count.
 4. One logical change per commit; check in before implementing; stop at chunk
    checkpoints for explicit go-ahead.

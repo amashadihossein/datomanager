@@ -2,12 +2,14 @@
 
 ## Quick Start for New Sessions
 
-1. **Check active work**: Open `dev/README.md` -> "Active Phases" table.
-2. **Load context**: Open the active phase doc (e.g. `dev/phase_0_scaffold.md`).
+1. **Check active work**: Open `dev/README.md` -> "Active Specs" table.
+2. **Load context**: Open the active spec under `.kiro/specs/{feature}/` -- read
+   `requirements.md`, `design.md`, and `tasks.md`; the next unchecked task is where to resume.
 3. **Read scope**: `dev/datomanager_scope.md` is the authoritative scope; the
    platform contract lives in the sibling repo at `../datom/dev/`.
-4. **Continue work**: Update the phase doc as you go (see datom's Chunk Delivery
-   Checklist in `../datom/dev/README.md` -- it applies here verbatim).
+4. **Continue work**: Check off each task in `tasks.md` in the same commit as its code
+   (see datom's Chunk Delivery Checklist in `../datom/dev/README.md` -- it applies here
+   verbatim).
 
 ## Project Overview
 
@@ -100,10 +102,17 @@ cross-repo execution sequence.
 
 ## Operational Discipline (inherited verbatim from datom)
 
-See `../datom/dev/README.md` for the full chunk lifecycle, delivery checklist,
-branch workflow, and phase completion procedure. Non-negotiables:
+**Workflow model — spec = phase.** A unit of multi-step work is a **Kiro spec** under
+`.kiro/specs/{feature}/` (`requirements.md` + `design.md` + `tasks.md`). It replaces the
+legacy `dev/phase_*.md` phase doc. **Specs persist — they are NOT deleted on completion.**
+Translate any legacy wording in datom's README the same way: "phase doc" -> "the spec";
+"Chunks table" / "Progress Log" -> "tasks.md"; "Active Phases" -> "Active Specs". Works
+identically in Kiro and Copilot.
 
-1. **Phase doc + feature branch before multi-step work.** Never jump to code.
+See `../datom/dev/README.md` for the full chunk lifecycle, delivery checklist, branch
+workflow, and spec completion procedure. Non-negotiables:
+
+1. **Spec (`.kiro/specs/{feature}/`) + feature branch before multi-step work.** Never jump to code.
 2. **Read before writing**: trace the full call chain (including datom callees)
    before editing.
 3. **Full test suite before every commit** (`devtools::test()`); report the count.
@@ -112,8 +121,9 @@ branch workflow, and phase completion procedure. Non-negotiables:
    explicit go-ahead ("go ahead", "yes", "do it", "proceed").
 6. **Chunk checkpoint**: after committing a chunk, STOP and summarize; wait for an
    explicit go-ahead before the next chunk.
-7. **Phase completion is mandatory**: migrate learnings, update README, delete the
-   phase doc, PR + merge + delete branch.
+7. **Spec completion is mandatory**: migrate durable learnings (design -> spec docs;
+   gotchas -> engineering notes; conventions -> these instructions), update the README
+   Active Specs table, PR + merge + delete branch. **Specs persist — do NOT delete them.**
 
 ## Don'ts
 
@@ -121,4 +131,4 @@ branch workflow, and phase completion procedure. Non-negotiables:
 - No data-repo writes from datomanager except through `datom_repo_*()` helpers.
 - No credentials in code, docs, committed files, git remotes, logs, or unmasked
   print output.
-- No editing datom from datomanager work unless a phase explicitly scopes it.
+- No editing datom from datomanager work unless a spec explicitly scopes it.
