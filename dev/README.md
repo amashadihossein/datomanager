@@ -41,7 +41,7 @@ those for the platform contract datomanager builds on.
 landed** (datom `main` @ `a62ad5f`, installed locally as datom 0.0.0.9001: the five gov
 exports are removed; `datom_repo_attach_governance()` / `datom_repo_delete()` are present).
 The datom change window is therefore **open** and the datomanager side of the lift-out is
-**ready to start**. See the roadmap below.
+**ready to start**. The datomanager side is fully specced under `.kiro/specs/gov-seam-liftout/` (requirements / design / contract / tasks); a new session resumes at the first unchecked task in that `tasks.md` (Task 0). See the roadmap below.
 
 ## Relationship to datom
 
@@ -67,7 +67,7 @@ The datom change window is therefore **open** and the datomanager side of the li
 
 | Spec | Started | Status | Location |
 |------|---------|--------|----------|
-| gov-seam-liftout (datomanager side) | 2026-06-13 | requirements + design + contract done; **tasks.md pending** (next action). datom side landed (datom 0.0.0.9001); datomanager side ready to start. | `.kiro/specs/gov-seam-liftout/` |
+| gov-seam-liftout (datomanager side) | 2026-06-13 | requirements + design + contract + **tasks** done. datom side landed (datom 0.0.0.9001). Ready to implement -- **Task 0** (branch/deps/baseline) is next. | `.kiro/specs/gov-seam-liftout/` |
 
 ### Completed Phases
 
@@ -79,7 +79,7 @@ The datom change window is therefore **open** and the datomanager side of the li
 
 | Step | Summary | Prereq |
 |------|---------|--------|
-| GOV_SEAM lift-out | **Now specced** (`.kiro/specs/gov-seam-liftout/`). datom (lands first): add `conn$gov_backend`, decouple `datom_init_repo()` from gov registration, remove the 5 exported gov functions + 9 internal gov-write helpers. datomanager (second): **reimplement** the 9 gov-write helpers natively (pure separation -- git2r + own storage IO, not a code move) and export the 5 `gov_*` functions (`gov_init`/`gov_attach`/`gov_decommission`/`gov_sync_dispatch`/`gov_pull`). `datom_repo_delete()` stays in datom. See the spec contract for the cross-repo execution sequence. **datom side landed (a62ad5f / datom 0.0.0.9001); datomanager side ready to start -- author tasks.md first.** | done (datom landed) |
+| GOV_SEAM lift-out | **Now specced** (`.kiro/specs/gov-seam-liftout/`). datom (lands first): add `conn$gov_backend`, decouple `datom_init_repo()` from gov registration, remove the 5 exported gov functions + 9 internal gov-write helpers. datomanager (second): **reimplement** the 9 gov-write helpers natively (pure separation -- git2r + own storage IO, not a code move) and export the 5 `gov_*` functions (`gov_init`/`gov_attach`/`gov_decommission`/`gov_sync_dispatch`/`gov_pull`). `datom_repo_delete()` stays in datom. See the spec contract for the cross-repo execution sequence. **datom side landed (a62ad5f / datom 0.0.0.9001); datomanager side specced (requirements/design/contract/tasks) -- begin at Task 0.** | done (datom landed) |
 | Phase 19: `gov_migrate_data()` | Governed migration verb: atomic copy + `ref.json` switch + migration-history record. Orchestrates datom's Phase 22 storage API; gov writes behind `# GOV_SEAM:`. Full spec in `draft_managed_migration.md`. 2-3 sessions. | Lift-out |
 | Access enforcement | Roles, grants, IAM-backed access points gating `datom_read()`. `access_*` surface. Design in `datomanager_overview.md`. | Phase 19 |
 
